@@ -18,16 +18,16 @@ This is a Vendor Management System (VMS) developed using Django and Django REST 
 
 ## Technical Details
 
-- **Python Version:** 3.x
-- **Django Version:** x.x
-- **Django REST Framework Version:** x.x
+- **Python Version:** 3.10
+- **Django Version:** 5.0.3
+- **Django REST Framework Version:** 
 - **Database:** SQLite (can be changed to other databases like PostgreSQL, MySQL, etc.)
 - **Authentication:** Token-based authentication
 
 ## Setup Instructions
 
 1. Clone the repository:
-   git clone https://github.com/yourusername/your-repository.git
+   git clone https://github.com/anas0895/vendor-management
 
 2. Install dependencies:
     pip install -r requirements.txt
@@ -39,3 +39,6 @@ This is a Vendor Management System (VMS) developed using Django and Django REST 
     python manage.py runserver
 
 5. Access the API endpoints at http://localhost:8000/api/
+
+
+6. For API Testing use Test Suite created by running : python manage.py test

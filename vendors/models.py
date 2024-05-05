@@ -52,7 +52,6 @@ class Vendor(AbstractUser):
     REQUIRED_FIELDS = []
 
     def save(self, *args, **kwargs):
-        # Generate a unique code if the user is being created
         if not self.pk:
             self.vendor_id = uuid.uuid4().hex[:10]  # Generate a 10-character unique code
         super().save(*args, **kwargs)
@@ -74,9 +73,8 @@ class PurchaseOrder(models.Model):
     acknowledgment_date = models.DateTimeField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
-        # Generate a unique code if the user is being created
         if not self.pk:
-            self.po_number = f"PO-{uuid.uuid4().hex[:8]}"  # Generate a 10-character unique code
+            self.po_number = f"PO-{uuid.uuid4().hex[:8]}" 
         super().save(*args, **kwargs)
 
 class HistoricalPerformance(models.Model):

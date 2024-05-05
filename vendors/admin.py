@@ -20,7 +20,7 @@ from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
-from .models import Vendor,PurchaseOrder
+from .models import Vendor,PurchaseOrder,HistoricalPerformance
 
 csrf_protect_m = method_decorator(csrf_protect)
 sensitive_post_parameters_m = method_decorator(sensitive_post_parameters())
@@ -209,3 +209,7 @@ admin.site.register(Vendor, VendorAdmin)
 @admin.register(PurchaseOrder)
 class PurchaseOrderAdmin(admin.ModelAdmin):
     list_display = ['po_number', 'vendor', 'order_date', 'status', 'delivery_date']
+
+@admin.register(HistoricalPerformance)
+class HistoricalPerformanceAdmin(admin.ModelAdmin):
+    list_display = ['vendor', 'on_time_delivery_rate', 'quality_rating_avg', 'average_response_time', 'fulfillment_rate', 'date']

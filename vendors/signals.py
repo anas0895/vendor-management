@@ -1,8 +1,8 @@
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from .models import PurchaseOrder
 from django.utils import timezone 
-from django.db.models import Avg, F, ExpressionWrapper, fields, Count, Case, When, FloatField
+from django.dispatch import receiver
+from django.db.models.signals import post_save
+from django.db.models import Avg, F, ExpressionWrapper, fields
+from .models import PurchaseOrder, HistoricalPerformance
 
 @receiver(post_save, sender=PurchaseOrder)
 def purchase_order_post_save(sender, instance, created, **kwargs):
@@ -13,11 +13,12 @@ def purchase_order_post_save(sender, instance, created, **kwargs):
     completed_po = query.count()
     total_po = PurchaseOrder.objects.count()
     vendor = instance.vendor
+    history_fields = {}
     if instance.status == 'completed':
         #On-Time Delivery Rate
         on_time_delivery_rate, avg_quality_rating, fulfillment_rate = calculate_performance(instance.vendor)
         vendor.on_time_delivery_rate = on_time_delivery_rate
-        vendor.avg_quality_rating = avg_quality_rating
+        vendor.quality_rating_avg = avg_quality_rating
         vendor.fulfillment_rate = fulfillment_rate
 
     # Average Response Time
@@ -25,13 +26,14 @@ def purchase_order_post_save(sender, instance, created, **kwargs):
         vendor.average_response_time = calculate_average_response_time(instance.vendor)
     vendor.save()
 
+    HistoricalPerformance.objects.create(vendor= vendor, on_time_delivery_rate=vendor.on_time_delivery_rate, quality_rating_avg=vendor.quality_rating_avg, average_response_time=vendor.average_response_time, fulfillment_rate=vendor.fulfillment_rate)
+
 def calculate_performance(vendor):
     vendor_pos = PurchaseOrder.objects.filter(vendor=vendor)
     completed_pos = vendor_pos.filter(status='completed')
 
     # on_time_delivery_rate
-    now = timezone.now()
-    on_time_deliveries = completed_pos.filter(delivery_date__lte=now.date())
+    on_time_deliveries = completed_pos.filter(delivery_date__gte=F('acknowledgment_date'))
     total_completed_pos = completed_pos.count()
     on_time_delivery_count = on_time_deliveries.count()
     if total_completed_pos > 0:
